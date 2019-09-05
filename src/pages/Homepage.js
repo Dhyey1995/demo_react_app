@@ -14,7 +14,7 @@ export default class Homepage extends Component {
         this.state = {
             allCountrys:[],register_id:'',
             planData:[],
-            formErrors: {name:'',company_name:'',email:'',country:'',address:'',owner:'0',phone_no:'',website_url:''},
+            nameError:'',company_name:'',email:'',country:'',address:'',owner:'0',phone_no:'',website_url:'',
             teamName:[],
             teamEmail:[],
             tab_1:true,tab_2:false,tab_3:false,
@@ -22,26 +22,45 @@ export default class Homepage extends Component {
         };
     }
 
+    validate = () => {
+        let nameError = '';
+        (!this.state.name) ? nameError = 'name is requird' : nameError = '';
+
+        if(nameError){
+           this.setState({nameError});
+           return false ; 
+        } 
+        return true ;
+    }
+
     handleSubmit = (event) => {
-        event.preventDefault();    
-        let formData = {
-            address:this.state.address,company_name:this.state.company_name,
-            country:this.state.country,email:this.state.email,
-            name:this.state.name,owner:this.state.owner,
-            phone_no:this.state.phone_no,website_url:this.state.website_url,
-        };
-        Axios.post("https://betasite.online/laravelAPI/api/register",formData)
-            .then(({ data }) => {
-            alert(data.message);
-            if (data.status) {
-                this.setState({
-                    tab_1:false,tab_2:true,tab_3:false,
-                    register_id:data.last_inserted_id,
-                });
-            } else {
-                alert("something went wrong");  
-            }        
-        });  
+        event.preventDefault();
+        console.log(this.state);
+        
+        if (this.validate()) {
+            let formData = {
+                address:this.state.address,company_name:this.state.company_name,
+                country:this.state.country,email:this.state.email,
+                name:this.state.name,owner:this.state.owner,
+                phone_no:this.state.phone_no,website_url:this.state.website_url,
+            };
+            Axios.post("https://betasite.online/laravelAPI/api/register",formData)
+                .then(({ data }) => {
+                alert(data.message);
+                if (data.status) {
+                    this.setState({
+                        tab_1:false,tab_2:true,tab_3:false,
+                        register_id:data.last_inserted_id,
+                    });
+                } else {
+                    alert("something went wrong");  
+                }        
+            });    
+        } else {
+            
+        }
+        
+          
     }
     componentDidMount(){
         Axios.get("https://betasite.online/laravelAPI/api/country")
@@ -161,7 +180,7 @@ export default class Homepage extends Component {
                                                     <label className="control-label col-sm-4">Full name :</label>
                                                     <div className="col-sm-10">
                                                         <input onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.name} name="name" />
-                                                        <p style={{ color: 'red' }}>{this.state.formErrors.name ? this.state.formErrors.name : ''}</p>
+                                                        <p style={{ color: 'red' }}>{this.state.nameError ? this.state.nameError : ''}</p>
                                                     </div>
                                                 </div>
                                                 <div className="form-group">
