@@ -5,7 +5,18 @@ import Axios from 'axios';
 import NavHader from '../components/NavHader.js';
 import MemberPlan from '../components/MemberPlan.js';
 
+const fromValid = formErrors => {
+    let valid = true ;
+    Object.values(formErrors).forEach( val => {
+        if(val == '') {
+            valid = false ;
+        }
+    });
+    return valid ;
+}
 
+const emailReg = RegExp(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/);
+const url_patten = RegExp(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/);
 
 export default class Homepage extends Component {
 
@@ -14,36 +25,23 @@ export default class Homepage extends Component {
         this.state = {
             allCountrys:[],register_id:'',
             planData:[],
-            nameError:'',company_name:'',email:'',country:'',address:'',owner:'0',phone_no:'',website_url:'',
+            formErrors :{name:'',company_name:'',email:'',country:'',address:'',owner:'',phone_no:'',website_url:''},
             teamName:[],
             teamEmail:[],
             tab_1:true,tab_2:false,tab_3:false,
-            name:'',company_name:'',email:'',country:'',address:'',owner:'0',phone_no:'',website_url:'',
+            name:'',company_name:'',email:'',country:'',address:'',owner:'1',phone_no:'',website_url:'',
         };
-    }
-
-    validate = () => {
-        let nameError = '';
-        (!this.state.name) ? nameError = 'name is requird' : nameError = '';
-
-        if(nameError){
-           this.setState({nameError});
-           return false ; 
-        } 
-        return true ;
     }
 
     handleSubmit = (event) => {
         event.preventDefault();
-        console.log(this.state);
-        
-        if (this.validate()) {
-            let formData = {
-                address:this.state.address,company_name:this.state.company_name,
-                country:this.state.country,email:this.state.email,
-                name:this.state.name,owner:this.state.owner,
-                phone_no:this.state.phone_no,website_url:this.state.website_url,
-            };
+        let formData = {
+            address:this.state.address,company_name:this.state.company_name,
+            country:this.state.country,email:this.state.email,
+            name:this.state.name,owner:this.state.owner,
+            phone_no:this.state.phone_no,website_url:this.state.website_url,
+        };
+        if (fromValid(formData)) {
             Axios.post("https://betasite.online/laravelAPI/api/register",formData)
                 .then(({ data }) => {
                 alert(data.message);
@@ -57,10 +55,8 @@ export default class Homepage extends Component {
                 }        
             });    
         } else {
-            
+            alert('fill in all the needed fields before you submit');   
         }
-        
-          
     }
     componentDidMount(){
         Axios.get("https://betasite.online/laravelAPI/api/country")
@@ -93,6 +89,36 @@ export default class Homepage extends Component {
     
     handelInputChange = (event) => {
         event.preventDefault();
+        const {name , value} = event.target;
+        let formErrors = this.state.formErrors;
+        switch (name) {
+            case 'name':
+                formErrors.name = value.length < 5 && value.length > 0 ? 'minimum 5 character required' : ""
+                break;
+            case 'company_name':
+                formErrors.company_name = value.length < 5 && value.length > 0 ? 'minimum 5 character required' : "";
+                break;
+            case 'country':
+                formErrors.country = (value.length < 0) ? 'Select Country field' : "";
+                break;
+            case 'address':
+                formErrors.address = value.length < 10 && value.length > 0 ? 'Minimum 10 character is required' : "";
+                break ;
+            case 'phone_no':
+                formErrors.phone_no = value.length < 10 && value.length > 0 ? 'Minimum 10 character is degit' : "";
+                break ;
+            case 'email':
+                formErrors.email = emailReg.test(value) && value.length > 0 ? '' : 'Email id is not valide';
+                break ;
+            case 'website_url':
+                formErrors.website_url = url_patten.test(value) && value.length > 0 ? '' : 'Website URL is not in propar formate';
+                break ;
+            default:
+                break;
+        }        
+
+        this.setState({formErrors,[name]: value}, () => console.log(this.state));
+
         this.setState({
             [event.target.name]:event.target.value
         });
@@ -146,15 +172,6 @@ export default class Homepage extends Component {
                             <div className="page-header">
                                 <h2 className="pageheader-title">Tabs</h2>
                                 <p className="pageheader-text">Proin placerat ante duiullam scelerisque a velit ac porta, fusce sit amet vestibulum mi. Morbi lobortis pulvinar quam.</p>
-                                <div className="page-breadcrumb">
-                                <nav aria-label="breadcrumb">
-                                    <ol className="breadcrumb">
-                                    <li className="breadcrumb-item"><a href="#" className="breadcrumb-link">Dashboard</a></li>
-                                    <li className="breadcrumb-item"><a href="#" className="breadcrumb-link">UI Elements</a></li>
-                                    <li className="breadcrumb-item active" aria-current="page">From</li>
-                                    </ol>
-                                </nav>
-                                </div>
                             </div>
                             </div>
                         </div>
@@ -179,14 +196,15 @@ export default class Homepage extends Component {
                                                 <div className="form-group">
                                                     <label className="control-label col-sm-4">Full name :</label>
                                                     <div className="col-sm-10">
-                                                        <input onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.name} name="name" />
-                                                        <p style={{ color: 'red' }}>{this.state.nameError ? this.state.nameError : ''}</p>
+                                                        <input autoComplete="off" onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.name} name="name" />
+                                                        <p style={{color: 'red'}}>{(this.state.formErrors.name) ? this.state.formErrors.name : '' }</p>
                                                     </div>
                                                 </div>
                                                 <div className="form-group">
                                                     <label className="control-label col-sm-4">Company name :</label>
                                                     <div className="col-sm-10">
-                                                        <input onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.company_name} name="company_name" />
+                                                        <input autoComplete="off" onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.company_name} name="company_name" />
+                                                        <p style={{color: 'red'}}>{(this.state.formErrors.company_name) ? this.state.formErrors.company_name : '' }</p>
                                                     </div>
                                                 </div>
                                                 
@@ -199,13 +217,15 @@ export default class Homepage extends Component {
                                                             return <option key={index} value={country.id}>{country.name}</option>
                                                         })}  
                                                     </select>
+                                                    <p style={{color: 'red'}}>{(this.state.formErrors.country) ? this.state.formErrors.country : '' }</p>
                                                     </div>
                                                 </div>
 
                                                 <div className="form-group">
                                                     <label className="control-label col-sm-4">Address :</label>
                                                     <div className="col-sm-10">
-                                                        <input onChange={this.handelInputChange} type="text" value={this.state.address} className="form-control" placeholder="" name="address" />
+                                                        <input autoComplete="off" onChange={this.handelInputChange} type="text" value={this.state.address} className="form-control" placeholder="" name="address" />
+                                                        <p style={{color: 'red'}}>{(this.state.formErrors.address) ? this.state.formErrors.address : '' }</p>
                                                     </div>
                                                 </div>
 
@@ -214,7 +234,7 @@ export default class Homepage extends Component {
                                                     <label className="control-label col-sm-4">Owner :</label>
                                                     <div className="col-sm-10">
                                                         <label className="custom-control custom-radio">
-                                                            <input onChange={this.handelInputChange} type="radio" value={this.state.owner} defaultChecked name="owner" value={1} className="custom-control-input" /><span className="custom-control-label">Yes</span>
+                                                            <input autoComplete="off" onChange={this.handelInputChange} type="radio" value={this.state.owner} defaultChecked name="owner" value={1} className="custom-control-input" /><span className="custom-control-label">Yes</span>
                                                         </label>
                                                         <label className="custom-control custom-radio">
                                                             <input onChange={this.handelInputChange} type="radio" value={this.state.owner} name="owner" value={0} className="custom-control-input" /><span className="custom-control-label">No</span>
@@ -225,21 +245,24 @@ export default class Homepage extends Component {
                                                 <div className="form-group">
                                                     <label className="control-label col-sm-4">Phone numebr :</label>
                                                     <div className="col-sm-10">
-                                                        <input onChange={this.handelInputChange} type="number" value={this.state.phone_no} className="form-control" placeholder="" name="phone_no" />
+                                                        <input autoComplete="off" onChange={this.handelInputChange} type="number" value={this.state.phone_no} className="form-control" placeholder="" name="phone_no" />
+                                                        <p style={{color: 'red'}}>{(this.state.formErrors.phone_no) ? this.state.formErrors.phone_no : '' }</p>
                                                     </div>
                                                 </div>
 
                                                 <div className="form-group">
                                                     <label className="control-label col-sm-4">email :</label>
                                                     <div className="col-sm-10">
-                                                        <input onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.email} name="email" />
+                                                        <input autoComplete="off" onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.email} name="email" />
+                                                        <p style={{color: 'red'}}>{(this.state.formErrors.email) ? this.state.formErrors.email : '' }</p>
                                                     </div>
                                                 </div>
 
                                                 <div className="form-group">
                                                     <label className="control-label col-sm-4">Website URL :</label>
                                                     <div className="col-sm-10">
-                                                        <input onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.website_url} name="website_url" />
+                                                        <input autoComplete="off" onChange={this.handelInputChange} type="text" className="form-control" placeholder="" value={this.state.website_url} name="website_url" />
+                                                        <p style={{color: 'red'}}>{(this.state.formErrors.website_url) ? this.state.formErrors.website_url : '' }</p>
                                                     </div>
                                                 </div>          
                                                 
@@ -264,11 +287,6 @@ export default class Homepage extends Component {
                                                         <div className="card-body border-top">
                                                             <ul className="list-unstyled bullet-check font-14">
                                                             <li>{plan.desc_one}</li>
-                                                            {/* <li>{plan.desc_two}</li>
-                                                            <li>{plan.desc_three}</li>
-                                                            <li>{plan.desc_four}</li>
-                                                            <li>{plan.desc_five}</li>
-                                                            <li>{plan.desc_six}</li> */}
                                                             </ul>
                                                             <button value={plan.id} onClick={this.selectPlanMethod} className={"btn btn-outline-secondary btn-block btn-lg"}>Get started</button>
                                                         </div>
