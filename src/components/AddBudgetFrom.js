@@ -5,18 +5,20 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const leftDiv = { float: 'left' }; 
 const rightDiv = { float: 'right' };
+const errorClass = { color: 'red' };
+const emailReg = RegExp(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/);
 
 
 export default class AddBudgetFrom extends Component {
     constructor(props){
         super(props);
         this.state = {
-            errors:{projectname:'',clientname:'',clientcountry:'',clientaddress:'',producers:'',brandmanager:'',emailid:'',director:'',cameraassistant:'',buildstrikedays:'',prelightdays:'',studioshootdays:'',locationdays:'',prelighthours:'',studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:''},
+            errors:{projectname:'',dop:'',clientname:'',clientcountry:'',clientaddress:'',producers:'',brandmanager:'',emailid:'',director:'',cameraassistant:'',buildstrikedays:'',prelightdays:'',studioshootdays:'',locationdays:'',prelighthours:'',studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:''},
             allCountrys:[],            
             projectname:'',clientname:'',clientcountry:'',clientaddress:'',producers:'',
             brandmanager:'',emailid:'',director:'',cameraassistant:'',buildstrikedays:'',
             prelightdays:'',studioshootdays:'',locationdays:'',prelighthours:'',
-            studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:'',
+            studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:'',dop:''
         };
     }
 
@@ -43,12 +45,11 @@ export default class AddBudgetFrom extends Component {
             fullname:this.state.fullname,
             designation:this.state.designation,
             invitemsg:this.state.invitemsg,
-
+            dop:this.state.dop
         };       
         
         Axios.post("https://betasite.online/laravelAPI/api/budget",formData)
             .then(({ data }) => {
-            //alert(data.message);
             if (data.status) {
                 alert("Budget Added successfully");
             } else {
@@ -61,11 +62,38 @@ export default class AddBudgetFrom extends Component {
         event.preventDefault();
 
         const { name, value } = event.target;
-        let errors = this.state.errors;
+        let errors = this.state.errors; 
 
-        
-        
-        
+        switch (name) {
+            case 'projectname': errors.projectname = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'clientname': errors.clientname = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'clientcountry': errors.clientcountry = (value.length > 0) ? '' : 'Select Country';break;
+            case 'clientaddress': errors.clientaddress = (value.length < 10 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'producers': errors.producers = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'brandmanager': errors.brandmanager = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'emailid': errors.emailid = (emailReg.test(value) && value.length > 0) ? 'Email id is not in proper formate' : '';break;
+            case 'director': errors.director = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'cameraassistant': errors.cameraassistant = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'buildstrikedays': errors.buildstrikedays = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break; 
+            case 'prelightdays': errors.prelightdays = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'studioshootdays': errors.studioshootdays = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'locationdays': errors.locationdays = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'prelighthours': errors.prelighthours = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'studioshoothours': errors.studioshoothours = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'locationhours': errors.locationhours = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'locations': errors.locations = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'fullname': errors.fullname = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'designation': errors.designation = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'invitemsg': errors.invitemsg = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'dop': errors.dop = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            
+
+
+            default:
+                break;
+        }
+        this.setState({errors,[name]: value});
+
         this.setState({
             [event.target.name]:event.target.value
         });
@@ -100,7 +128,8 @@ export default class AddBudgetFrom extends Component {
                         <div className="form-group">
                             <label className="control-label col-sm-4">Project / Film Name:</label>
                             <div className="col-sm-10">
-                                <input onChange={this.handleInputChange} value={this.state.projectname} type="text" className="form-control" placeholder="" name="projectname" />
+                                <input autoComplete="off" onChange={this.handleInputChange} value={this.state.projectname} type="text" className="form-control" placeholder="" name="projectname" />
+                                <p style={errorClass}>{this.state.errors.projectname}</p>
                             </div>
                         </div>
                         <div className="form-group">
@@ -113,54 +142,63 @@ export default class AddBudgetFrom extends Component {
                             <label className="control-label col-sm-4">Client Address:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.clientaddress} type="text" className="form-control" placeholder="" name="clientaddress" />
+                                <p style={errorClass}>{this.state.errors.clientaddress}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Brand Manager:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.brandmanager} type="text" className="form-control" placeholder="" name="brandmanager" />
+                                <p style={errorClass}>{this.state.errors.brandmanager}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Director:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.director} type="text" className="form-control" placeholder="" name="director" />
+                                <p style={errorClass}>{this.state.errors.director}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Camera Assistant:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.cameraassistant} type="text" className="form-control" placeholder="" name="cameraassistant" />
+                                <p style={errorClass}>{this.state.errors.cameraassistant}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Pre Light Days:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.prelightdays} type="text" className="form-control" placeholder="" name="prelightdays" />
+                                <p style={errorClass}>{this.state.errors.prelightdays}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Location Days:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.locationdays}  type="text" className="form-control" placeholder="" name="locationdays" />
+                                <p style={errorClass}>{this.state.errors.locationdays}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Studio Shoot Hours:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.studioshoothours}  type="text" className="form-control" placeholder="" name="studioshoothours" />
+                                <p style={errorClass}>{this.state.errors.studioshoothours}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Locations:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.locations} type="text" className="form-control" placeholder="" name="locations" />
+                                <p style={errorClass}>{this.state.errors.locations}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Designation:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.designation} type="text" className="form-control" placeholder="" name="designation" />
+                                <p style={errorClass}>{this.state.errors.designation}</p>
                             </div>
                         </div>
                     </div>
@@ -169,6 +207,7 @@ export default class AddBudgetFrom extends Component {
                             <label className="control-label col-sm-4">Brand / Client Name:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.clientname} type="text" className="form-control" placeholder="" name="clientname" />
+                                <p style={errorClass}>{this.state.errors.clientname}</p>
                             </div>
                         </div>
                         <div className="form-group">
@@ -180,60 +219,70 @@ export default class AddBudgetFrom extends Component {
                                     return <option key={index} value={country.id}>{country.name}</option>;
                                 })}  
                             </select>
+                            <p style={errorClass}>{this.state.errors.clientcountry}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Producers:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.producers} type="text" className="form-control" placeholder="" name="producers" />
+                                <p style={errorClass}>{this.state.errors.producers}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Email Id:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.emailid} type="text" className="form-control" placeholder="" name="emailid" />
+                                <p style={errorClass}>{this.state.errors.emailid}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">DOP:</label>
                             <div className="col-sm-10">
                             <DatePicker selected={this.state.dop} className="form-control" />
+                            <p style={errorClass}>{this.state.errors.dop}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Build / Strike days:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.buildstrikedays} type="text" className="form-control" placeholder="" name="buildstrikedays" />
+                                <p style={errorClass}>{this.state.errors.buildstrikedays}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Studio Shoot Days:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.studioshootdays} type="text" className="form-control" placeholder="" name="studioshootdays" />
+                                <p style={errorClass}>{this.state.errors.studioshootdays}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Prelight Hours:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.prelighthours}  type="text" className="form-control" placeholder="" name="prelighthours" />
+                                <p style={errorClass}>{this.state.errors.prelighthours}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Location Hours:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.locationhours}  type="text" className="form-control" placeholder="" name="locationhours" />
+                                <p style={errorClass}>{this.state.errors.locationhours}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Full Name:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.fullname}  type="text" className="form-control" placeholder="" name="fullname" />
+                                <p style={errorClass}>{this.state.errors.fullname}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Invite Message:</label>
                             <div className="col-sm-10">
                                 <input onChange={this.handleInputChange} value={this.state.invitemsg}  type="text" className="form-control" placeholder="" name="invitemsg" />
+                                <p style={errorClass}>{this.state.errors.invitemsg}</p>
                             </div>
                         </div>
                     </div>
