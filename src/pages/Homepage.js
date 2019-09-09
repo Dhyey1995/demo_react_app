@@ -93,25 +93,25 @@ export default class Homepage extends Component {
         let formErrors = this.state.formErrors;
         switch (name) {
             case 'name':
-                formErrors.name = value.length < 5 && value.length > 0 ? 'minimum 5 character required' : ""
+                formErrors.name = value.length < 5 && value.length > 0 ? 'minimum 5 characters required' : ""
                 break;
             case 'company_name':
-                formErrors.company_name = value.length < 5 && value.length > 0 ? 'minimum 5 character required' : "";
+                formErrors.company_name = value.length < 5 && value.length > 0 ? 'minimum 5 characters required' : "";
                 break;
             case 'country':
                 formErrors.country = (value.length < 0) ? 'Select Country field' : "";
                 break;
             case 'address':
-                formErrors.address = value.length < 10 && value.length > 0 ? 'Minimum 10 character is required' : "";
+                formErrors.address = value.length < 10 && value.length > 0 ? 'Minimum 10 characters is required' : "";
                 break ;
             case 'phone_no':
-                formErrors.phone_no = value.length < 10 && value.length > 0 ? 'Minimum 10 character is degit' : "";
+                formErrors.phone_no = value.length < 10 && value.length > 0 ? 'Minimum 10 digits is required' : "";
                 break ;
             case 'email':
-                formErrors.email = emailReg.test(value) && value.length > 0 ? '' : 'Email id is not valide';
+                formErrors.email = emailReg.test(value) && value.length > 0 ? '' : 'Email id is not valid';
                 break ;
             case 'website_url':
-                formErrors.website_url = url_patten.test(value) && value.length > 0 ? '' : 'Website URL is not in propar formate';
+                formErrors.website_url = url_patten.test(value) && value.length > 0 ? '' : 'Website URL is not in proper format';
                 break ;
             default:
                 break;
@@ -243,7 +243,7 @@ export default class Homepage extends Component {
                                                 </div>
 
                                                 <div className="form-group">
-                                                    <label className="control-label col-sm-4">Phone numebr :</label>
+                                                    <label className="control-label col-sm-4">Phone number :</label>
                                                     <div className="col-sm-10">
                                                         <input autoComplete="off" onChange={this.handelInputChange} type="number" value={this.state.phone_no} className="form-control" placeholder="" name="phone_no" />
                                                         <p style={{color: 'red'}}>{(this.state.formErrors.phone_no) ? this.state.formErrors.phone_no : '' }</p>
