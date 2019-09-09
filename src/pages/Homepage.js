@@ -164,7 +164,11 @@ export default class Homepage extends Component {
                         <div className="menu-list">
                             <li>
                                 <div className="conntection-footer">
-                                    <NavLink to={'/'}>Dashboard</NavLink>
+                                    <NavLink to={'/'}>Dashboard</NavLink> 
+                                </div>
+                                {/* <br /> */}
+                                <div className="conntection-footer">
+                                    <NavLink to={'/add_new_budget'}>Add new budget</NavLink> 
                                 </div>
                             </li>
                         </div>

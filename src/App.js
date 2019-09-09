@@ -1,13 +1,19 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Route } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import Homepage from './pages/Homepage.js';
+import BudgetAdd from './pages/BudgetAdd.js';
 
 function App() {
   return (
       <section>
-        <Route exact path="/" component={Homepage} />
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/" component={Homepage} />
+            <Route path="/add_new_budget" component={BudgetAdd} />
+          </Switch>
+        </BrowserRouter>
       </section>
   );
 }
