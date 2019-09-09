@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ButtonInput } from 'react-bootstrap';
 import Axios from 'axios';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 import NavHader from '../components/NavHader.js';
 import MemberPlan from '../components/MemberPlan.js';
 
@@ -23,12 +24,14 @@ export default class Homepage extends Component {
     constructor(props){
         super(props);
         this.state = {
+            value: '<iframe src="https://php.betadelivery.com/cinetools-deshboard/contactFrom" style="width: 100%;height: 380px;padding-top: 20px"></iframe>',
+            copied: false,
             allCountrys:[],register_id:'',
             planData:[],
             formErrors :{name:'',company_name:'',email:'',country:'',address:'',owner:'',phone_no:'',website_url:''},
             teamName:[],
             teamEmail:[],
-            tab_1:true,tab_2:false,tab_3:false,
+            tab_1:true,tab_2:false,tab_3:false,tab_4:false,
             name:'',company_name:'',email:'',country:'',address:'',owner:'1',phone_no:'',website_url:'',
         };
     }
@@ -47,7 +50,7 @@ export default class Homepage extends Component {
                 alert(data.message);
                 if (data.status) {
                     this.setState({
-                        tab_1:false,tab_2:true,tab_3:false,
+                        tab_1:false,tab_2:true,tab_3:false,tab_4:false,
                         register_id:data.last_inserted_id,
                     });
                 } else {
@@ -81,7 +84,7 @@ export default class Homepage extends Component {
             .then(respones => {
                 if (respones.data.status) {
                     this.setState({
-                        tab_1:false,tab_2:false,tab_3:true,
+                        tab_1:false,tab_2:false,tab_3:true,tab_4:false,
                     });
             } 
         });
@@ -132,8 +135,10 @@ export default class Homepage extends Component {
         }
         Axios.post("https://betasite.online/laravelAPI/api/team_by_user",dataPayload,{'Content-Type': 'application/x-www-form-urlencoded'})
             .then(respones => {
-                console.log(respones);
                 alert(respones.data.message);
+                this.setState({
+                    tab_1:false,tab_2:false,tab_3:false,tab_4:true
+                });
         });
     }
 
@@ -180,15 +185,18 @@ export default class Homepage extends Component {
                             <div className="col-md-12">
                                 <div className="tab-regular">
                                     <ul className="nav nav-tabs " id="myTab" role="tablist">
-                                    <li className="nav-item">
-                                        <a className={'nav-link' + (this.state.tab_1 ? " active" : "")} id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Profile</a>
-                                    </li>
-                                    <li className="nav-item">
-                                        <a className={'nav-link' + (this.state.tab_2 ? " active" : "")} id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Select plan</a>
-                                    </li>
-                                    <li className="nav-item">
-                                        <a className={'nav-link' + (this.state.tab_3 ? " active" : "")} id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Add Team</a>
-                                    </li>
+                                        <li className="nav-item">
+                                            <a className={'nav-link' + (this.state.tab_1 ? " active" : "")} id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Profile</a>
+                                        </li>
+                                        <li className="nav-item">
+                                            <a className={'nav-link' + (this.state.tab_2 ? " active" : "")} id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Select plan</a>
+                                        </li>
+                                        <li className="nav-item">
+                                            <a className={'nav-link' + (this.state.tab_3 ? " active" : "")} id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Add Team</a>
+                                        </li>
+                                        <li className="nav-item">
+                                            <a className={'nav-link' + (this.state.tab_4 ? " active" : "")} id="iframe-tab" data-toggle="tab" href="#iframe" role="tab" aria-controls="iframe" aria-selected="false">iframe Code</a>
+                                        </li>
                                     </ul>
                                     <div className="tab-content" id="myTabContent">
                                         <div className={'tab-pane fade' + (this.state.tab_1 ? " show active" : "")} id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -317,6 +325,19 @@ export default class Homepage extends Component {
                                                 </div>
                                             </form>
                                         </div>
+                                        <div className={'tab-pane fade' + (this.state.tab_4 ? " show active" : "")} id="iframe" role="tabpanel" aria-labelledby="contact-tab">
+                                        {/* <input value={this.state.value} onChange={({target: {value}}) => this.setState({value, copied: false})} /> */}
+                                                
+                                        <textarea disabled class="form-control" onChange={({target: {value}}) => this.setState({value, copied: false})} id="exampleFormControlTextarea1" value={this.state.value} rows="3"></textarea>
+                                        
+                                        <CopyToClipboard text={this.state.value}
+                                            onCopy={() => this.setState({copied: true})}>
+                                            <button class="btn btn-default">Copy to clipboard</button>
+                                        </CopyToClipboard>
+                                            
+                                            {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
