@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Axios from 'axios';
+import FormData from 'form-data';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -7,24 +8,43 @@ const leftDiv = { float: 'left' };
 const rightDiv = { float: 'right' };
 const errorClass = { color: 'red' };
 const emailReg = RegExp(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/);
-
+const validation = formData  => {
+    let valid = true ;
+    let empty_fields = [];
+    Object.entries(formData).forEach((field_data) => {
+        if(field_data[1] == '') {
+            valid = false ;
+            empty_fields.push(field_data[0]);
+        }
+    });
+    return empty_fields ;
+}
 
 export default class AddBudgetFrom extends Component {
     constructor(props){
         super(props);
         this.state = {
             errors:{projectname:'',dop:'',clientname:'',clientcountry:'',clientaddress:'',producers:'',brandmanager:'',emailid:'',director:'',cameraassistant:'',buildstrikedays:'',prelightdays:'',studioshootdays:'',locationdays:'',prelighthours:'',studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:''},
-            allCountrys:[],            
+            allCountrys:[],   
+            selectedFiles:'',         
             projectname:'',clientname:'',clientcountry:'',clientaddress:'',producers:'',
             brandmanager:'',emailid:'',director:'',cameraassistant:'',buildstrikedays:'',
             prelightdays:'',studioshootdays:'',locationdays:'',prelighthours:'',
-            studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:'',dop:''
+            studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:'',dop:'00-00-0000'
         };
     }
 
     handleSubmit = (event) => {
         event.preventDefault();    
-        let formData = {
+
+        let file = this.state.selectedFiles;
+        console.log(file);
+        
+        var formData = new FormData();
+        formData.set('file',file);
+        formData.set('name',file.name);
+
+        let formInputData = {
             projectname:this.state.projectname,
             clientname:this.state.clientname,
             clientcountry:this.state.clientcountry,
@@ -45,25 +65,37 @@ export default class AddBudgetFrom extends Component {
             fullname:this.state.fullname,
             designation:this.state.designation,
             invitemsg:this.state.invitemsg,
-            dop:this.state.dop
-        };       
+            dop:this.state.dop,
+            file:formData
+        };
+
+        console.log(formInputData);return ;
         
-        Axios.post("https://betasite.online/laravelAPI/api/budget",formData)
-            .then(({ data }) => {
-            if (data.status) {
-                alert("Budget Added successfully");
-            } else {
-                alert("something went wrong");  
-            }        
-        });  
+
+        let validation_res = validation(formInputData);
+        
+        if (!validation_res.length) {
+            Axios.post("https://betasite.online/laravelAPI/api/budget",formInputData)
+                .then(({ data }) => {
+
+                    console.log(data);
+                    
+
+                if (data.status) {
+                    alert("Budget Added successfully");
+                } else {
+                    alert("something went wrong");  
+                }        
+            });
+        } else {
+            alert('fill in all the needed fields before you submit');
+        }        
     }
 
     handleInputChange = (event) => {
         event.preventDefault();
-
         const { name, value } = event.target;
         let errors = this.state.errors; 
-
         switch (name) {
             case 'projectname': errors.projectname = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'clientname': errors.clientname = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
@@ -71,26 +103,22 @@ export default class AddBudgetFrom extends Component {
             case 'clientaddress': errors.clientaddress = (value.length < 10 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'producers': errors.producers = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'brandmanager': errors.brandmanager = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            case 'emailid': errors.emailid = (emailReg.test(value) && value.length > 0) ? 'Email id is not in proper formate' : '';break;
+            case 'emailid': errors.emailid = (emailReg.test(value) && value.length > 0) ? '' : 'Email id is not valid';break;
             case 'director': errors.director = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'cameraassistant': errors.cameraassistant = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            case 'buildstrikedays': errors.buildstrikedays = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break; 
-            case 'prelightdays': errors.prelightdays = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            case 'studioshootdays': errors.studioshootdays = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            case 'locationdays': errors.locationdays = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            case 'prelighthours': errors.prelighthours = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            case 'studioshoothours': errors.studioshoothours = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            case 'locationhours': errors.locationhours = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
+            case 'buildstrikedays': errors.buildstrikedays = (value.length > 0) ? '' : 'this field is required';break; 
+            case 'prelightdays': errors.prelightdays = (value.length > 0) ? '' : 'this field is required';break;
+            case 'studioshootdays': errors.studioshootdays = (value.length > 0) ? '' : 'this field is required';break;
+            case 'locationdays': errors.locationdays = (value.length > 0) ? '' : 'this field is required';break;
+            case 'prelighthours': errors.prelighthours = (value.length > 0) ? '' : 'this field is required';break;
+            case 'studioshoothours': errors.studioshoothours = (value.length > 0) ? '' : 'this field is required';break;
+            case 'locationhours': errors.locationhours = (value.length > 0) ? '' : 'this field is required';break;
             case 'locations': errors.locations = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'fullname': errors.fullname = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'designation': errors.designation = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'invitemsg': errors.invitemsg = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'dop': errors.dop = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            
-
-
-            default:
-                break;
+            default:break;
         }
         this.setState({errors,[name]: value});
 
@@ -106,6 +134,12 @@ export default class AddBudgetFrom extends Component {
                 allCountrys:data.data
             });
         });        
+    }
+
+    logoUploadMethod = event => {
+        this.setState({
+            selectedFiles:event.target.files[0]
+        });
     }
 
     render() {
@@ -135,7 +169,7 @@ export default class AddBudgetFrom extends Component {
                         <div className="form-group">
                             <label className="control-label col-sm-4">Client Logo:</label>
                             <div className="col-sm-10">
-                                <input type="file" ref={this.logo} name="logo" />
+                                <input type="file" name="logo_file" onChange={this.logoUploadMethod} />
                             </div>
                         </div>
                         <div className="form-group">
@@ -239,7 +273,9 @@ export default class AddBudgetFrom extends Component {
                         <div className="form-group">
                             <label className="control-label col-sm-4">DOP:</label>
                             <div className="col-sm-10">
-                            <DatePicker selected={this.state.dop} className="form-control" />
+                            <DatePicker value={this.state.dop} dateFormat="MMMM d, yyyy h:mm aa" onChange={this.handleInputChange} name="dop" className="form-control" />
+                            
+
                             <p style={errorClass}>{this.state.errors.dop}</p>
                             </div>
                         </div>
