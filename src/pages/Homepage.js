@@ -4,6 +4,7 @@ import { ButtonInput } from 'react-bootstrap';
 import Axios from 'axios';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import NavHader from '../components/NavHader.js';
+import Sidebar from '../components/Sidebar.js';
 import MemberPlan from '../components/MemberPlan.js';
 
 const fromValid = formErrors => {
@@ -162,15 +163,7 @@ export default class Homepage extends Component {
                     <NavHader />
                     <div className="nav-left-sidebar sidebar-dark">
                         <div className="menu-list">
-                            <li>
-                                <div className="conntection-footer">
-                                    <NavLink to={'/'}>Dashboard</NavLink> 
-                                </div>
-                                {/* <br /> */}
-                                <div className="conntection-footer">
-                                    <NavLink to={'/add_new_budget'}>Add new budget</NavLink> 
-                                </div>
-                            </li>
+                            <Sidebar />
                         </div>
                     </div>
                 </div>
@@ -332,11 +325,11 @@ export default class Homepage extends Component {
                                         <div className={'tab-pane fade' + (this.state.tab_4 ? " show active" : "")} id="iframe" role="tabpanel" aria-labelledby="contact-tab">
                                         {/* <input value={this.state.value} onChange={({target: {value}}) => this.setState({value, copied: false})} /> */}
                                                 
-                                        <textarea disabled class="form-control" onChange={({target: {value}}) => this.setState({value, copied: false})} id="exampleFormControlTextarea1" value={this.state.value} rows="3"></textarea>
+                                        <textarea disabled className="form-control" onChange={({target: {value}}) => this.setState({value, copied: false})} id="exampleFormControlTextarea1" value={this.state.value} rows="3"></textarea>
                                         
                                         <CopyToClipboard text={this.state.value}
                                             onCopy={() => this.setState({copied: true})}>
-                                            <button class="btn btn-default">Copy to clipboard</button>
+                                            <button className="btn btn-default">Copy to clipboard</button>
                                         </CopyToClipboard>
                                             
                                             {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}

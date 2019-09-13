@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import Axios from 'axios';
 import FormData from 'form-data';
 import jQuery from "jquery";
+import Loader from 'react-loader-spinner';
 import swal from 'sweetalert';
 import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
 
 const leftDiv = { float: 'left' }; 
@@ -11,7 +13,8 @@ const rightDiv = { float: 'right' };
 const errorClass = { color: 'red' };
 
 const emailReg = RegExp(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/);
-const validation = formData  => {
+
+const validation = (formData , errorData)  => {
     let valid = true ;
     let empty_fields = [];
     Object.entries(formData).forEach((field_data) => {
@@ -20,6 +23,14 @@ const validation = formData  => {
             empty_fields.push(field_data[0]);
         }
     });
+
+    Object.entries(errorData).forEach((field_data) => {
+        if(field_data[1] !== '') {
+            valid = false ;
+            empty_fields.push(field_data[0]);
+        }
+    });
+
     return empty_fields ;
 }
 
@@ -29,11 +40,12 @@ export default class AddBudgetFrom extends Component {
         this.state = {
             errors:{projectname:'',dop:'',clientname:'',clientcountry:'',clientaddress:'',producers:'',brandmanager:'',emailid:'',director:'',cameraassistant:'',buildstrikedays:'',prelightdays:'',studioshootdays:'',locationdays:'',prelighthours:'',studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:''},
             allCountrys:[],   
-            selectedFiles:'',         
+            selectedFiles:'',     
+            loader:'',
             projectname:'',clientname:'',clientcountry:'',clientaddress:'',producers:'',
             brandmanager:'',emailid:'',director:'',cameraassistant:'',buildstrikedays:'',
             prelightdays:'',studioshootdays:'',locationdays:'',prelighthours:'',
-            studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:'',dop:'00-00-0000'
+            studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:'',dop:''
         };
     }
 
@@ -97,8 +109,7 @@ export default class AddBudgetFrom extends Component {
             }
         }
 
-        let validation_res = validation(formInputData);
-        
+        let validation_res = validation(formInputData , this.state.errors );
         if (!validation_res.length) {
             Axios.post("https://betasite.online/laravelAPI/api/budget",logoUpload,config)
                 .then(({ data }) => {
@@ -110,7 +121,7 @@ export default class AddBudgetFrom extends Component {
                 }        
             });
         } else {
-            swal("Oops...", "fill in all the needed fields before you submit", "error");
+            swal("Oops...", "fill in all the needed fields before you submit","error");
         }        
     }
 
@@ -139,7 +150,6 @@ export default class AddBudgetFrom extends Component {
             case 'fullname': errors.fullname = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'designation': errors.designation = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             case 'invitemsg': errors.invitemsg = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
-            case 'dop': errors.dop = (value.length < 5 && value.length > 0) ? 'this field must be 5 characters long!' : '';break;
             default:break;
         }
         this.setState({errors,[name]: value});
@@ -147,6 +157,12 @@ export default class AddBudgetFrom extends Component {
         this.setState({
             [event.target.name]:event.target.value
         });
+    }
+
+    handleDateSelect = (event) => {
+        this.setState({
+            dop:event.toString('dd-MM-yy')
+        })
     }
 
     componentDidMount(){
@@ -171,7 +187,7 @@ export default class AddBudgetFrom extends Component {
                     <div className="row">
                         <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div className="page-header">
-                                <h2 className="pageheader-title">Tabs</h2>
+                                <h2 className="pageheader-title">Add new budget</h2>
                             </div>
                         </div>
                     </div>
@@ -225,21 +241,21 @@ export default class AddBudgetFrom extends Component {
                         <div className="form-group">
                             <label className="control-label col-sm-4">Pre Light Days:</label>
                             <div className="col-sm-10">
-                                <input onChange={this.handleInputChange} value={this.state.prelightdays} type="text" className="form-control" placeholder="" name="prelightdays" />
+                                <input onChange={this.handleInputChange} value={this.state.prelightdays} type="number" className="form-control" placeholder="" name="prelightdays" />
                                 <p style={errorClass}>{this.state.errors.prelightdays}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Location Days:</label>
                             <div className="col-sm-10">
-                                <input onChange={this.handleInputChange} value={this.state.locationdays}  type="text" className="form-control" placeholder="" name="locationdays" />
+                                <input onChange={this.handleInputChange} value={this.state.locationdays}  type="number" className="form-control" placeholder="" name="locationdays" />
                                 <p style={errorClass}>{this.state.errors.locationdays}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Studio Shoot Hours:</label>
                             <div className="col-sm-10">
-                                <input onChange={this.handleInputChange} value={this.state.studioshoothours}  type="text" className="form-control" placeholder="" name="studioshoothours" />
+                                <input onChange={this.handleInputChange} value={this.state.studioshoothours}  type="number" className="form-control" placeholder="" name="studioshoothours" />
                                 <p style={errorClass}>{this.state.errors.studioshoothours}</p>
                             </div>
                         </div>
@@ -295,37 +311,35 @@ export default class AddBudgetFrom extends Component {
                         <div className="form-group">
                             <label className="control-label col-sm-4">DOP:</label>
                             <div className="col-sm-10">
-                            <DatePicker value={this.state.dop} dateFormat="MMMM d, yyyy h:mm aa" onChange={this.handleInputChange} name="dop" className="form-control" />
-                            
-
+                            <DatePicker className="form-control" value={this.state.dop} onSelect={this.handleDateSelect} />
                             <p style={errorClass}>{this.state.errors.dop}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Build / Strike days:</label>
                             <div className="col-sm-10">
-                                <input onChange={this.handleInputChange} value={this.state.buildstrikedays} type="text" className="form-control" placeholder="" name="buildstrikedays" />
+                                <input onChange={this.handleInputChange} value={this.state.buildstrikedays} type="number" className="form-control" placeholder="" name="buildstrikedays" />
                                 <p style={errorClass}>{this.state.errors.buildstrikedays}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Studio Shoot Days:</label>
                             <div className="col-sm-10">
-                                <input onChange={this.handleInputChange} value={this.state.studioshootdays} type="text" className="form-control" placeholder="" name="studioshootdays" />
+                                <input onChange={this.handleInputChange} value={this.state.studioshootdays} type="number" className="form-control" placeholder="" name="studioshootdays" />
                                 <p style={errorClass}>{this.state.errors.studioshootdays}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Prelight Hours:</label>
                             <div className="col-sm-10">
-                                <input onChange={this.handleInputChange} value={this.state.prelighthours}  type="text" className="form-control" placeholder="" name="prelighthours" />
+                                <input onChange={this.handleInputChange} value={this.state.prelighthours}  type="number" className="form-control" placeholder="" name="prelighthours" />
                                 <p style={errorClass}>{this.state.errors.prelighthours}</p>
                             </div>
                         </div>
                         <div className="form-group">
                             <label className="control-label col-sm-4">Location Hours:</label>
                             <div className="col-sm-10">
-                                <input onChange={this.handleInputChange} value={this.state.locationhours}  type="text" className="form-control" placeholder="" name="locationhours" />
+                                <input onChange={this.handleInputChange} value={this.state.locationhours}  type="number" className="form-control" placeholder="" name="locationhours" />
                                 <p style={errorClass}>{this.state.errors.locationhours}</p>
                             </div>
                         </div>
@@ -355,3 +369,5 @@ export default class AddBudgetFrom extends Component {
         )
     }
 }
+
+
