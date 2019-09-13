@@ -1,18 +1,21 @@
 import React, { Component } from 'react'
 import Axios from 'axios';
 import FormData from 'form-data';
+import jQuery from "jquery";
+import swal from 'sweetalert';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const leftDiv = { float: 'left' }; 
 const rightDiv = { float: 'right' };
 const errorClass = { color: 'red' };
+
 const emailReg = RegExp(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/);
 const validation = formData  => {
     let valid = true ;
     let empty_fields = [];
     Object.entries(formData).forEach((field_data) => {
-        if(field_data[1] == '') {
+        if(field_data[1] === '') {
             valid = false ;
             empty_fields.push(field_data[0]);
         }
@@ -37,13 +40,8 @@ export default class AddBudgetFrom extends Component {
     handleSubmit = (event) => {
         event.preventDefault();    
 
-        let file = this.state.selectedFiles;
-        console.log(file);
         
-        var formData = new FormData();
-        formData.set('file',file);
-        formData.set('name',file.name);
-
+        
         let formInputData = {
             projectname:this.state.projectname,
             clientname:this.state.clientname,
@@ -66,29 +64,53 @@ export default class AddBudgetFrom extends Component {
             designation:this.state.designation,
             invitemsg:this.state.invitemsg,
             dop:this.state.dop,
-            file:formData
         };
 
-        console.log(formInputData);return ;
-        
+        let logo_image = this.state.selectedFiles;
+
+        var logoUpload = new FormData();
+        logoUpload.append("logo_image", logo_image);
+        logoUpload.append('projectname',formInputData.projectname);
+        logoUpload.append('clientname',formInputData.clientname);
+        logoUpload.append('clientcountry',formInputData.clientcountry);
+        logoUpload.append('clientaddress',formInputData.clientaddress);
+        logoUpload.append('producers',formInputData.producers);
+        logoUpload.append('brandmanager',formInputData.brandmanager);
+        logoUpload.append('emailid',formInputData.emailid);
+        logoUpload.append('director',formInputData.director);
+        logoUpload.append('cameraassistant',formInputData.cameraassistant);
+        logoUpload.append('buildstrikedays',formInputData.buildstrikedays);
+        logoUpload.append('prelightdays',formInputData.prelightdays);
+        logoUpload.append('studioshootdays',formInputData.studioshootdays);
+        logoUpload.append('locationdays',formInputData.locationdays);
+        logoUpload.append('prelighthours',formInputData.prelighthours);
+        logoUpload.append('studioshoothours',formInputData.studioshoothours);
+        logoUpload.append('locationhours',formInputData.locationhours);
+        logoUpload.append('locations',formInputData.locations);
+        logoUpload.append('fullname',formInputData.fullname);
+        logoUpload.append('designation',formInputData.designation);
+        logoUpload.append('dop',formInputData.dop);
+
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }
 
         let validation_res = validation(formInputData);
         
         if (!validation_res.length) {
-            Axios.post("https://betasite.online/laravelAPI/api/budget",formInputData)
+            Axios.post("https://betasite.online/laravelAPI/api/budget",logoUpload,config)
                 .then(({ data }) => {
-
                     console.log(data);
-                    
-
                 if (data.status) {
-                    alert("Budget Added successfully");
+                    swal("Success", "Budget Added successfully", "success");
                 } else {
-                    alert("something went wrong");  
+                    swal("Oops...", "something went wrong", "error");
                 }        
             });
         } else {
-            alert('fill in all the needed fields before you submit');
+            swal("Oops...", "fill in all the needed fields before you submit", "error");
         }        
     }
 
@@ -156,7 +178,7 @@ export default class AddBudgetFrom extends Component {
 
     <div className="row">
         <div className="col-md-12">
-            <form className="form-horizontal" method="POST" onSubmit={this.handleSubmit}>
+            <form className="form-horizontal" encType="multipart/form-data" method="POST" onSubmit={this.handleSubmit}>
                 <div className="col-sm-12">
                     <div className="col-sm-6" style={leftDiv}>
                         <div className="form-group">

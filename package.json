@@ -6,6 +6,7 @@
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "form-data": "^2.5.1",
+    "jquery": "^3.4.1",
     "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.12",
     "react-copy-to-clipboard": "^5.0.1",
@@ -14,7 +15,8 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.1.1",
     "react-validation": "^3.0.7",
-    "reactjs-file-uploader": "^1.0.8"
+    "reactjs-file-uploader": "^1.0.8",
+    "sweetalert": "^2.1.2"
   },
   "scripts": {
     "start": "react-scripts start",
