@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import Axios from 'axios';
 import FormData from 'form-data';
-import jQuery from "jquery";
-import Loader from 'react-loader-spinner';
 import swal from 'sweetalert';
 import DatePicker from "react-datepicker";
+import LocalStorage from 'localStorage';
+import { Redirect } from 'react-router';
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -45,15 +45,13 @@ export default class AddBudgetFrom extends Component {
             projectname:'',clientname:'',clientcountry:'',clientaddress:'',producers:'',
             brandmanager:'',emailid:'',director:'',cameraassistant:'',buildstrikedays:'',
             prelightdays:'',studioshootdays:'',locationdays:'',prelighthours:'',
-            studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:'',dop:''
+            studioshoothours:'',locationhours:'',locations:'',fullname:'',designation:'',invitemsg:'',dop:'',
+            BudgetID:'',updateBudgetStatus:false
         };
     }
 
     handleSubmit = (event) => {
         event.preventDefault();    
-
-        
-        
         let formInputData = {
             projectname:this.state.projectname,
             clientname:this.state.clientname,
@@ -113,9 +111,10 @@ export default class AddBudgetFrom extends Component {
         if (!validation_res.length) {
             Axios.post("https://betasite.online/laravelAPI/api/budget",logoUpload,config)
                 .then(({ data }) => {
-                    console.log(data);
                 if (data.status) {
+                    LocalStorage.setItem('budgetID',data.last_inserted_id);
                     swal("Success", "Budget Added successfully", "success");
+                    this.setState({ updateBudgetStatus:true });
                 } else {
                     swal("Oops...", "something went wrong", "error");
                 }        
@@ -181,6 +180,9 @@ export default class AddBudgetFrom extends Component {
     }
 
     render() {
+        if( this.state.updateBudgetStatus ){
+            return <Redirect to='/select_template' />;
+        }
         return (
             <div className="dashboard-wrapper">
                 <div className="container-fluid  dashboard-content">

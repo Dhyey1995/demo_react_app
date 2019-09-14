@@ -3,9 +3,10 @@ import NavHader from '../components/NavHader.js';
 import Sidebar from '../components/Sidebar.js';
 import Template from '../components/Template.js';
 import Axios from 'axios';
-import { Redirect } from 'react-router';
-import { Button , ButtonToolbar } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import LocalStorage from 'localStorage';
+import { NavLink } from 'react-router-dom';
+import { Redirect } from 'react-router'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 class SelectTemplate extends Component {
@@ -15,21 +16,24 @@ class SelectTemplate extends Component {
         this.state = {
             templates:[],
             api_response:true,
+            budgetID:LocalStorage.getItem('budgetID'),
         }
     }
-    addNewTemplate = (event) => {
-        return <Redirect to='/add_new_template'  />
-    }
+    
     async componentDidMount() {
         Axios.get("https://betasite.online/laravelAPI/api/templates")
             .then(({ data }) => {
                this.setState({
-                templates:data.data
+                templates:data.data,
+                
             });
         }); 
         LocalStorage.setItem('user_id',25);
     }
     render() {
+        if (!this.state.budgetID) {
+            return <Redirect to='/add_new_budget' />;
+        } 
         return (
             <div className="dashboard-main-wrapper">
                 <div className="dashboard-header">
@@ -52,17 +56,17 @@ class SelectTemplate extends Component {
                         <div className="row">
                             {this.state.templates.map( (template , index) => (
                                 <div key={index} className="col-md-4">
-                                    <Template props={template} />
+                                    <Template budgetID={this.state.budgetID} props={template} />
                                 </div>
                             ))}
                         </div>
                         <div className="row">
-                            <div className="col-sm-12">
-                                <ButtonToolbar>
-                                    <Button onClick={this.addNewTemplate} variant="primary" size="lg">
+                            <div className="col-sm-3">
+                                <NavLink to={'/add_new_template'}>
+                                    <Button variant="primary" size="lg">
                                         Add New Template
                                     </Button>
-                                </ButtonToolbar>
+                                </NavLink>
                             </div>
                         </div>
                     </div>
