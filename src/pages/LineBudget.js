@@ -69,7 +69,7 @@ class LineBudget extends Component {
                                                 <p className="mb-3">Email Address: <br /><span className="text-danger">{this.state.budgetData.email}</span></p>
                                             </div>
                                             <div className="col-sm-3">
-                                                <p className="mb-3">Last Update: <br /><span className="text-danger">{this.state.budgetData.updated_date}</span></p>
+                                                <p className="mb-3">DOP: <br /><span className="text-danger">{this.state.budgetData.DOP}</span></p>
                                             </div>
                                             
                                         </div>

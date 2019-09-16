@@ -76,6 +76,7 @@ export default class AddBudgetFrom extends Component {
             dop:this.state.dop,
         };
 
+
         let logo_image = this.state.selectedFiles;
 
         var logoUpload = new FormData();
@@ -106,7 +107,6 @@ export default class AddBudgetFrom extends Component {
                 'content-type': 'multipart/form-data'
             }
         }
-
         let validation_res = validation(formInputData , this.state.errors );
         if (!validation_res.length) {
             Axios.post("https://betasite.online/laravelAPI/api/budget",logoUpload,config)
@@ -158,10 +158,11 @@ export default class AddBudgetFrom extends Component {
         });
     }
 
-    handleDateSelect = (event) => {
+    handleChangeDop = (event) => {
+        var date = new Date(event),mnth = ("0" + (date.getMonth() + 1)).slice(-2),day = ("0" + date.getDate()).slice(-2);
         this.setState({
-            dop:event.toString('dd-MM-yy')
-        })
+            dop:[day, mnth , date.getFullYear()].join("-")
+        });   
     }
 
     componentDidMount(){
@@ -192,8 +193,7 @@ export default class AddBudgetFrom extends Component {
                                 <h2 className="pageheader-title">Add new budget</h2>
                             </div>
                         </div>
-                    </div>
-
+                    </div>  
     <div className="row">
         <div className="col-md-12">
             <form className="form-horizontal" encType="multipart/form-data" method="POST" onSubmit={this.handleSubmit}>
@@ -313,7 +313,7 @@ export default class AddBudgetFrom extends Component {
                         <div className="form-group">
                             <label className="control-label col-sm-4">DOP:</label>
                             <div className="col-sm-10">
-                            <DatePicker className="form-control" value={this.state.dop} onSelect={this.handleDateSelect} />
+                            <DatePicker className="form-control" value={this.state.dop} onChange={this.handleChangeDop} onSelect={this.handleDateSelect} />
                             <p style={errorClass}>{this.state.errors.dop}</p>
                             </div>
                         </div>

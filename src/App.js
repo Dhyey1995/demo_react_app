@@ -6,6 +6,7 @@ import BudgetAdd from './pages/BudgetAdd.js';
 import AddNewTemplate from './pages/AddNewTemplate.js';
 import LineBudget from './pages/LineBudget.js';
 import SelectTemplate from './pages/SelectTemplate.js';
+import DownloadPdf from './pages/DownloadPdf';
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/select_template" component={SelectTemplate} />
                     <Route path="/add_new_template" component={AddNewTemplate} />
                     <Route path="/lineBudget" component={LineBudget} />
+                    <Route path="/download_pdf" component={DownloadPdf} />
                 </Switch>
             </BrowserRouter>
         </section>

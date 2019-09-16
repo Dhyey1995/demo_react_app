@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import NavHader from '../components/NavHader.js';
 import Sidebar from '../components/Sidebar.js';
-import AddBudgetFrom from '../components/AddBudgetFrom.js';
+import DownloadPdfContent from '../components/DownloadPdfContent';
 
-export default class BudgetAdd extends Component {
+class DownloadPdf extends Component {
     render() {
         return (
             <div className="dashboard-main-wrapper">
@@ -15,8 +15,10 @@ export default class BudgetAdd extends Component {
                         </div>
                     </div>
                 </div>
-                <AddBudgetFrom />
+                <DownloadPdfContent />
             </div>
-        )
+        );
     }
 }
+
+export default DownloadPdf;

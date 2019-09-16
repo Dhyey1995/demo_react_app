@@ -15,6 +15,10 @@ class Sidebar extends React.Component {
                 <div className="conntection-footer">
                     <NavLink to={'/select_template'}>Select Template</NavLink> 
                 </div>
+                <br />
+                <div className="conntection-footer">
+                    <NavLink to={'/download_pdf'}>Download PDF</NavLink> 
+                </div>
             </li>
         );
     }
