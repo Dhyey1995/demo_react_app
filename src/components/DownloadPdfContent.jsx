@@ -8,15 +8,35 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 class DownloadPdfContent extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            tableHeader:'',
+            tableData:'',
+            tableName:''
+        }
     }
 
     downloadPdfDynamicTable = () => {
-
+        console.log(this.state);
+        var doc = new jsPDF();
+        let HeaderName = this.state.tableHeader.tableName;
+        doc.text("From javascript arrays",14,10);
+        let tableDataArray = [];
+        this.state.tableData.map( oneRowData => {
+            tableDataArray.push(Object.values(oneRowData));
+        });
+        doc.autoTable({ head: [this.state.tableHeader], body: tableDataArray });
+        doc.save("table.pdf");        
     }
 
-
     componentDidMount = () => {
-        
+        Axios.get('https://betasite.online/laravelAPI/gettable')
+        .then(response => {
+            this.setState({
+                tableHeader:response.data.tableHeader,
+                tableData:response.data.tableData,
+                tableName:response.data.tableName
+            });
+        });
     }
 
 
@@ -44,14 +64,14 @@ class DownloadPdfContent extends Component {
                         <div className="col-md-4">
                             <div className="page-header">
                                 <Button onClick={this.downloadPdfMethod} variant="primary" size="lg">
-                                    Dwonload simple pdf (static)
+                                    Download simple pdf (static)
                                 </Button>
                             </div>
                         </div>
                         <div className="col-md-4">
                             <div className="page-header">
-                                <Button onClick={this.downloadPdfDynamicTable} variant="primary" size="lg">
-                                    Dwonload dynamic table
+                                <Button target="_blank" onClick={this.downloadPdfDynamicTable} variant="primary" size="lg">
+                                    Download dynamic table
                                 </Button>
                             </div>
                         </div>

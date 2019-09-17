@@ -11,13 +11,17 @@ class Sidebar extends React.Component {
                 <div className="conntection-footer">
                     <NavLink to={'/add_new_budget'}>Add new budget</NavLink> 
                 </div>
-                <br />
+                {/* <br />
                 <div className="conntection-footer">
                     <NavLink to={'/select_template'}>Select Template</NavLink> 
-                </div>
+                </div> */}
                 <br />
                 <div className="conntection-footer">
                     <NavLink to={'/download_pdf'}>Download PDF</NavLink> 
+                </div>
+                <br />
+                <div className="conntection-footer">
+                    <NavLink to={'/download_exls'}>Download Excel</NavLink> 
                 </div>
             </li>
         );
