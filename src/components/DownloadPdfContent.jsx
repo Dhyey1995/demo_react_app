@@ -75,13 +75,6 @@ class DownloadPdfContent extends Component {
                                 </Button>
                             </div>
                         </div>
-                        {/* <div className="col-md-4">
-                            <div className="page-header">
-                                <Button onClick={this.Donwloa} variant="primary" size="lg">
-                                    Dwonload simple pdf (static)
-                                </Button>
-                            </div>
-                        </div> */}
                     </div>
                 </div>
             </div>

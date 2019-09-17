@@ -23,6 +23,10 @@ class Sidebar extends React.Component {
                 <div className="conntection-footer">
                     <NavLink to={'/download_exls'}>Download Excel</NavLink> 
                 </div>
+                <br />
+                <div className="conntection-footer">
+                    <NavLink to={'/login_with_gmail'}>Login with gmail</NavLink> 
+                </div>
             </li>
         );
     }
