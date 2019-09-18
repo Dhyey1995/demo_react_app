@@ -6,14 +6,13 @@ class LoginGmailContent extends Component {
     constructor(props){
         super(props);
         this.state = {
-            dataLogin:'',
+            dataLogin:''
         }
     }
     gmailLoginData = logindata => {
-        console.log(logindata);
-        // this.setState({
-        //     dataLogin:logindata.email
-        // });
+        this.setState({
+            dataLogin:logindata
+        });
     }
     render() {
         return (
@@ -22,7 +21,7 @@ class LoginGmailContent extends Component {
                     <div className="row">
                         <div className="col-md-4">
                             <div className="page-header">
-                                <LoginGmail getLogindata={this.gmailLoginData} />
+                                <LoginGmail  getLogindata={this.gmailLoginData} />
                             </div>
                         </div>
                     </div>
