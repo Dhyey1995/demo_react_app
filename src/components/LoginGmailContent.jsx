@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import LoginGmail from './LoginGmail';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-
 class LoginGmailContent extends Component {
     constructor(props){
         super(props);
@@ -12,6 +11,9 @@ class LoginGmailContent extends Component {
     }
     gmailLoginData = logindata => {
         console.log(logindata);
+        // this.setState({
+        //     dataLogin:logindata.email
+        // });
     }
     render() {
         return (

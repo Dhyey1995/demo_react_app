@@ -15,6 +15,9 @@ class LoginGmail extends Component {
         });
     }
 
+
+
+
     render() {
         if (this.state.gmailUserData != '') {
             this.props.getLogindata(this.state.gmailUserData);
