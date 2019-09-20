@@ -1,37 +1,51 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import LoginGmail from './LoginGmail';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import LogoutGmail from './LogoutGmail';
+import Axios from 'axios';
 
 class LoginGmailContent extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
-            dataLogin:''
+            userInfo: '',
+            redirectTo:''
         }
     }
     gmailLoginData = logindata => {
-        this.setState({
-            dataLogin:logindata
+        if (logindata.error) {
+            alert(logindata.error);return ;
+        }
+        let dataPayload = {
+            name: logindata.profileObj.givenName + ' ' + logindata.profileObj.familyName,
+            email: logindata.profileObj.email,
+            password: logindata.profileObj.googleId,
+            remember_token: logindata.tokenObj.id_token
+        }
+        Axios.post('https://betasite.online/laravelAPI/api/users', dataPayload)
+        .then(response => {
+            let redirectURL="";response.data.is_new ? redirectURL = "https://gmail.com" : redirectURL = "/" ; 
+            this.setState({ userInfo: response.data , redirectTo:redirectURL });
         });
     }
+
     render() {
+        if (this.state.redirectTo) {
+            window.location.assign(this.state.redirectTo);
+        }
         return (
             <div className="dashboard-wrapper">
                 <div className="container-fluid  dashboard-content">
                     <div className="row">
                         <div className="col-md-4">
                             <div className="page-header">
-                                <LoginGmail  getLogindata={this.gmailLoginData} />
+                                <LoginGmail getLogindata={this.gmailLoginData} />
                             </div>
                         </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-12">
-                            {/* <BootstrapTable data={products} striped hover>
-                                <TableHeaderColumn isKey dataField='id'>Product ID</TableHeaderColumn>
-                                <TableHeaderColumn dataField='name'>Product Name</TableHeaderColumn>
-                                <TableHeaderColumn dataField='price'>Product Price</TableHeaderColumn>
-                            </BootstrapTable> */}
+                        <div className="col-md-4">
+                            <div className="page-header">
+                                <LogoutGmail getLogoutData={this.gmailLogoutData} />
+                            </div>
                         </div>
                     </div>
                 </div>

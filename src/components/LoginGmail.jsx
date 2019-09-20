@@ -5,6 +5,7 @@ class LoginGmail extends Component {
     constructor(props){
         super(props);
     }
+
     responseGoogle = response => {
         this.props.getLogindata(response);
     }
@@ -13,12 +14,12 @@ class LoginGmail extends Component {
         return (
             <GoogleLogin
                 clientId="1084915128402-hmcgfeeur0ls7t8dko781qf28rf6nb18.apps.googleusercontent.com"
-                buttonText="Gamil Login"
+                buttonText="Login"
                 onSuccess={this.responseGoogle}
                 onFailure={this.responseGoogle}
+                cookiePolicy={'single_host_origin'}
             />
         );
     }
 }
-
 export default LoginGmail;
