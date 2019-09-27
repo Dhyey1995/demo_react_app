@@ -43,7 +43,6 @@ class LineItemCategoryContent extends Component {
     }
 
     handleContentEditableUpdate = (event) => {
-
         if (event.currentTarget.attributes.maincategoryid) {
             let indexNumber = event.currentTarget.attributes.indexnumber.value;
             let categoryId = event.currentTarget.attributes.maincategoryid.value;
@@ -90,38 +89,22 @@ class LineItemCategoryContent extends Component {
     methodPublish = () => {
         console.log(this.state.lineItem);
     }
-
-
     addLineItemsMethod = (event) => {
         let dataItem = []; let indexnumber = event.target.attributes.indexnumber.value;
-
-        
-
         this.state.lineItem.forEach((oneRowItem, index) => {
-            let incrementIndex = index + 1 ;
-
+            let incrementIndex = index + 1;
             let lineItemHeader = {
-                name: '', no: '', days: '', rate: '', travelDays: '', travelRates: '', travelPays: '',
-                otHours: '', ot: '', estimate: '', actual: '', indexnumber: incrementIndex,
+                name: '', no: '', days: '', rate: '', travelDays: '', travelRates: '', travelPays: '', isNew: true,
+                otHours: '', ot: '', estimate: '', actual: '', indexnumber: '',
             };
-
             if (index === parseFloat(indexnumber)) {
-
                 dataItem.push(oneRowItem);
-
-
                 dataItem.push(lineItemHeader);
-
             } else {
                 dataItem.push(oneRowItem);
             }
         });
-
-       
-
-        // console.log(dataItem);
-
-
+        this.setState({ lineItem: dataItem });
     }
 
 
@@ -187,7 +170,7 @@ class LineItemCategoryContent extends Component {
                                                         <tr key={index}>
                                                             <td> <ContentEditable
                                                                 innerRef={this.contentEditable}
-                                                                html={oneLineItem.indexnumber} // innerHTML of the editable div
+                                                                html={index.toString()} // innerHTML of the editable div
                                                                 disabled={true}  // use true to disable editing                                                                
                                                             /> </td>
                                                             <td>
