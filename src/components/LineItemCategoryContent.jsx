@@ -13,18 +13,17 @@ class LineItemCategoryContent extends Component {
             lineItem: [],
         }
     }
-
     componentDidMount = () => {
         Axios.get('https://betasite.online/laravelAPI/api/getLineItemsCategory/' + this.state.costId)
             .then(response => {
                 if (response.data.status) {
                     let dataItem = [];
                     response.data.data.forEach(category => {
-                        dataItem.push({ categoryName: category.name, mainCategoryId: category.id });
+                        dataItem.push({ categoryName: category.name, mainCategoryID: category.id });
                         category.line_item.forEach(subcategory => {
                             let lineItemHeader = {
                                 name: '', no: '', days: '', rate: '', travelDays: '', travelRates: '', travelPays: '',
-                                otHours: '', ot: '', estimate: '', actual: '', indexnumber: ''
+                                otHours: '', ot: '', estimate: '', actual: '', indexnumber: '', mainCategoryID: category.id
                             };
                             if (subcategory.name) {
                                 lineItemHeader.name = subcategory.name;
@@ -41,11 +40,9 @@ class LineItemCategoryContent extends Component {
                 }
             });
     }
-
     handleContentEditableUpdate = (event) => {
         if (event.currentTarget.attributes.maincategoryid) {
             let indexNumber = event.currentTarget.attributes.indexnumber.value;
-            let categoryId = event.currentTarget.attributes.maincategoryid.value;
             let changedValue = HtmlDecode(event.target.value);
             let dataItem = [];
             this.state.lineItem.forEach((oneRowItem, index) => {
@@ -85,17 +82,18 @@ class LineItemCategoryContent extends Component {
             });
         }
     }
-
     methodPublish = () => {
         console.log(this.state.lineItem);
     }
     addLineItemsMethod = (event) => {
-        let dataItem = []; let indexnumber = event.target.attributes.indexnumber.value;
+        let dataItem = [];
+        let indexnumber = event.target.attributes.indexnumber.value;
+        let mainCategoryId = event.target.attributes.maincategoryid.value;
+
         this.state.lineItem.forEach((oneRowItem, index) => {
-            let incrementIndex = index + 1;
             let lineItemHeader = {
                 name: '', no: '', days: '', rate: '', travelDays: '', travelRates: '', travelPays: '', isNew: true,
-                otHours: '', ot: '', estimate: '', actual: '', indexnumber: '',
+                otHours: '', ot: '', estimate: '', actual: '', indexnumber: '', mainCategoryID: mainCategoryId,
             };
             if (index === parseFloat(indexnumber)) {
                 dataItem.push(oneRowItem);
@@ -104,6 +102,37 @@ class LineItemCategoryContent extends Component {
                 dataItem.push(oneRowItem);
             }
         });
+        this.setState({ lineItem: dataItem });
+    }
+
+    removeLineItemsMethod = (event) => {
+        let dataItem = []; let indexnumber = event.target.attributes.indexnumber.value;
+        this.state.lineItem.forEach((oneRowItem, index) => {
+            if (parseFloat(indexnumber) !== index) {
+                dataItem.push(oneRowItem);
+            }
+        });
+        this.setState({ lineItem: dataItem });
+    }
+    deleteCategoryMethod = (event) => {
+        let dataItem = []; let maincategoryID = event.target.attributes.maincategoryid.value;
+        this.state.lineItem.forEach(oneRowItem => {
+            if (parseFloat(oneRowItem.mainCategoryID) !== parseFloat(maincategoryID)) {
+                dataItem.push(oneRowItem);
+            }
+        });
+        this.setState({ lineItem: dataItem });
+    }
+    addNewCategoryMethod = (event) => {
+        let categoryLength = 1; let dataItem = [];
+        this.state.lineItem.forEach((oneRowItem, index) => {
+            if (Object.keys(oneRowItem).length < 3) {
+                categoryLength++; dataItem.push(oneRowItem);
+            } else {
+                dataItem.push(oneRowItem);
+            }
+        });
+        dataItem.push({ categoryName: '', mainCategoryID: categoryLength });
         this.setState({ lineItem: dataItem });
     }
 
@@ -121,6 +150,9 @@ class LineItemCategoryContent extends Component {
                             <div className="card">
                                 <h5 className="card-header">Header
                                     <span className="float-right">
+                                        <Button target="_blank" onClick={this.addNewCategoryMethod} variant="warning">
+                                            Add new category
+                                        </Button>
                                         <Button target="_blank" onClick={this.methodPublish} variant="primary">
                                             Show
                                         </Button>
@@ -142,7 +174,7 @@ class LineItemCategoryContent extends Component {
                                                 <th scope="col">OT</th>
                                                 <th scope="col">ESTIMATE</th>
                                                 <th scope="col">ACTUAL</th>
-                                                <th scope="col">Edit / Delete</th>
+                                                <th scope="col">Add / Delete</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -156,12 +188,20 @@ class LineItemCategoryContent extends Component {
                                                                     html={oneLineItem.categoryName}
                                                                     disabled={false}
                                                                     indexnumber={index}
-                                                                    maincategoryid={oneLineItem.mainCategoryId}
+                                                                    maincategoryid={oneLineItem.mainCategoryID}
                                                                     onChange={this.handleContentEditableUpdate} />
                                                             </td>
                                                             <td>
-                                                                <Button indexnumber={index} onClick={this.addLineItemsMethod} variant="primary">+</Button>
-                                                                <Button indexnumber={index} variant="danger">-</Button>
+                                                                <Button
+                                                                    indexnumber={index}
+                                                                    onClick={this.addLineItemsMethod}
+                                                                    maincategoryid={oneLineItem.mainCategoryID}
+                                                                    variant="warning">+</Button>
+                                                                <Button
+                                                                    indexnumber={index}
+                                                                    maincategoryid={oneLineItem.mainCategoryID}
+                                                                    onClick={this.deleteCategoryMethod}
+                                                                    variant="danger">-</Button>
                                                             </td>
                                                         </tr>
                                                     )
@@ -262,7 +302,7 @@ class LineItemCategoryContent extends Component {
                                                                     onChange={this.handleContentEditableUpdate} />
                                                             </td>
                                                             <td>
-                                                                <Button variant="danger">-</Button>
+                                                                <Button indexnumber={index} onClick={this.removeLineItemsMethod} variant="danger">-</Button>
                                                             </td>
                                                         </tr>
                                                     )
