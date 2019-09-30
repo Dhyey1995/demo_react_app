@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap';
 import LocalStorage from 'localStorage';
 import ContentEditable from 'react-contenteditable';
 import HtmlDecode from 'decode-html';
+import FormData from 'form-data';
 
 class LineItemCategoryContent extends Component {
     constructor(props) {
@@ -83,25 +84,40 @@ class LineItemCategoryContent extends Component {
         }
     }
     methodPublish = () => {
-        console.log(this.state.lineItem);
+        let dataPayload = new FormData();
+        dataPayload.append("budget_id",LocalStorage.getItem('budgetID'));
+        dataPayload.append("front_sheet_id",LocalStorage.getItem('costs_id'));
+        dataPayload.append("user_id",LocalStorage.getItem('user_id'));
+        dataPayload.append("dataPayload",JSON.stringify(this.state.lineItem));
+        Axios.post('https://betasite.online/laravelAPI/api/user_budget_details', dataPayload )
+        .then( response => {
+            console.log(response);
+        })
+        .catch( error => {
+            console.log(error); 
+        });
     }
     addLineItemsMethod = (event) => {
         let dataItem = [];
         let indexnumber = event.target.attributes.indexnumber.value;
         let mainCategoryId = event.target.attributes.maincategoryid.value;
-
+        let mainCategoryCount = 0;
+        let lineItemHeader = {
+            name: '', no: '', days: '', rate: '', travelDays: '', travelRates: '', travelPays: '', isNew: true,
+            otHours: '', ot: '', estimate: '', actual: '', indexnumber: '', mainCategoryID: mainCategoryId,
+        };
+        this.state.lineItem.forEach(oneRowItem => {
+            if (parseFloat(mainCategoryId) === parseFloat(oneRowItem.mainCategoryID)) mainCategoryCount++;
+        });
         this.state.lineItem.forEach((oneRowItem, index) => {
-            let lineItemHeader = {
-                name: '', no: '', days: '', rate: '', travelDays: '', travelRates: '', travelPays: '', isNew: true,
-                otHours: '', ot: '', estimate: '', actual: '', indexnumber: '', mainCategoryID: mainCategoryId,
-            };
-            if (index === parseFloat(indexnumber)) {
-                dataItem.push(oneRowItem);
+            if (index === parseFloat(indexnumber) + mainCategoryCount) {
                 dataItem.push(lineItemHeader);
+                dataItem.push(oneRowItem);
             } else {
                 dataItem.push(oneRowItem);
             }
         });
+        if (dataItem.length === this.state.lineItem.length) dataItem.push(lineItemHeader);
         this.setState({ lineItem: dataItem });
     }
 
@@ -125,23 +141,22 @@ class LineItemCategoryContent extends Component {
     }
     addNewCategoryMethod = (event) => {
         let categoryLength = 1; let dataItem = [];
-        this.state.lineItem.forEach((oneRowItem, index) => {
-            if (Object.keys(oneRowItem).length < 3) {
+        this.state.lineItem.forEach(oneRowItem => {
+            if (Object.keys(oneRowItem).length < 4) {
                 categoryLength++; dataItem.push(oneRowItem);
             } else {
                 dataItem.push(oneRowItem);
             }
         });
-        dataItem.push({ categoryName: '', mainCategoryID: categoryLength });
+        dataItem.push({ categoryName: '', mainCategoryID: categoryLength, isNew: true });
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth',
+        });
         this.setState({ lineItem: dataItem });
     }
-
-
     render() {
-        const styles = {
-            color: 'red',
-            textAlign: 'center'
-        }
+        const styles = { color: 'red', textAlign: 'center' };
         return (
             <div className="dashboard-wrapper">
                 <div className="container-fluid  dashboard-content">
@@ -179,7 +194,7 @@ class LineItemCategoryContent extends Component {
                                         </thead>
                                         <tbody>
                                             {this.state.lineItem.map((oneLineItem, index) => {
-                                                if (Object.keys(oneLineItem).length < 3) {
+                                                if (Object.keys(oneLineItem).length < 4) {
                                                     return (
                                                         <tr key={index}>
                                                             <td colSpan={12} >
