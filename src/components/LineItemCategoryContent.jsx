@@ -5,6 +5,7 @@ import LocalStorage from 'localStorage';
 import ContentEditable from 'react-contenteditable';
 import HtmlDecode from 'decode-html';
 import FormData from 'form-data';
+import JSPDF from 'jspdf';
 
 class LineItemCategoryContent extends Component {
     constructor(props) {
@@ -85,17 +86,17 @@ class LineItemCategoryContent extends Component {
     }
     methodPublish = () => {
         let dataPayload = new FormData();
-        dataPayload.append("budget_id",LocalStorage.getItem('budgetID'));
-        dataPayload.append("front_sheet_id",LocalStorage.getItem('costs_id'));
-        dataPayload.append("user_id",LocalStorage.getItem('user_id'));
-        dataPayload.append("dataPayload",JSON.stringify(this.state.lineItem));
-        Axios.post('https://betasite.online/laravelAPI/api/user_budget_details', dataPayload )
-        .then( response => {
-            console.log(response);
-        })
-        .catch( error => {
-            console.log(error); 
-        });
+        dataPayload.append("budget_id", LocalStorage.getItem('budgetID'));
+        dataPayload.append("front_sheet_id", LocalStorage.getItem('costs_id'));
+        dataPayload.append("user_id", LocalStorage.getItem('user_id'));
+        dataPayload.append("dataPayload", JSON.stringify(this.state.lineItem));
+        Axios.post('https://betasite.online/laravelAPI/api/user_budget_details', dataPayload)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
     addLineItemsMethod = (event) => {
         let dataItem = [];
@@ -155,6 +156,41 @@ class LineItemCategoryContent extends Component {
         });
         this.setState({ lineItem: dataItem });
     }
+
+    getPdfMethod = () => {
+
+        let dataPayload = this.state.lineItem ; let dataItem = [];
+
+        var head = [["name","no", "days","rate","travelDays","travelRates","travelPays","otHours","ot","estimate","actual"]];
+
+        dataPayload.forEach( oneRowItem => {
+            
+            if (Object.keys(oneRowItem).length > 4) {
+                let dataArray = [
+                    oneRowItem.name ,
+                    oneRowItem.no ,
+                    oneRowItem.days ,
+                    oneRowItem.rate , 
+                    oneRowItem.travelDays ,
+                    oneRowItem.travelRates ,
+                    oneRowItem.travelPays ,
+                    oneRowItem.otHours ,
+                    oneRowItem.ot ,
+                    oneRowItem.estimate ,
+                    oneRowItem.actual ,
+                ];
+                console.log(dataArray);
+            }
+        });
+        // var doc = new jsPDF();
+        // doc.text("From javascript arrays",14,10);
+        // doc.autoTable({ head: head, body: body });
+        // doc.save("table.pdf");
+        
+        
+        
+    }
+
     render() {
         const styles = { color: 'red', textAlign: 'center' };
         return (
@@ -165,11 +201,14 @@ class LineItemCategoryContent extends Component {
                             <div className="card">
                                 <h5 className="card-header">Header
                                     <span className="float-right">
+                                        <Button target="_blank" onClick={this.getPdfMethod} variant="success">
+                                            Get PDF
+                                        </Button>
                                         <Button target="_blank" onClick={this.addNewCategoryMethod} variant="warning">
                                             Add new category
                                         </Button>
                                         <Button target="_blank" onClick={this.methodPublish} variant="primary">
-                                            Show
+                                            Publish
                                         </Button>
                                     </span>
                                 </h5>
